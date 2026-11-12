@@ -56,6 +56,15 @@ console.log("SECOND BOT:", secondInfo.username);
 
   await firstBot.api.setWebhook(`${BASE_URL}/telegram/first`);
   await secondBot.api.setWebhook(`${BASE_URL}/telegram/second`);
+  console.log(
+  "FIRST WEBHOOK:",
+  await firstBot.api.getWebhookInfo()
+);
+
+console.log(
+  "SECOND WEBHOOK:",
+  await secondBot.api.getWebhookInfo()
+);
 
   app.listen(PORT, () => {
     console.log("Viral Video Club server started");
