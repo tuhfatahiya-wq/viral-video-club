@@ -52,6 +52,30 @@ console.log("SECOND BOT:", secondInfo.username);
     "স্বাগতম Viral Video Delivery Bot-এ! 🎥"
   );
 });   
+  secondBot.on("message:video", async (ctx) => {
+  try {
+    if (String(ctx.from.id) !== String(ADMIN_ID)) {
+      return ctx.reply("আপনার ভিডিও আপলোড করার অনুমতি নেই।");
+    }
+
+    const video = ctx.message.video;
+
+    const { error } = await supabase
+      .from("videos")
+      .insert({
+        title: ctx.message.caption || "নতুন ভিডিও",
+        telegram_file_id: video.file_id,
+        caption: ctx.message.caption || null
+      });
+
+    if (error) throw error;
+
+    await ctx.reply("ভিডিও সফলভাবে সংরক্ষণ হয়েছে! 🎬");
+  } catch (error) {
+    console.error("VIDEO SAVE ERROR:", error);
+    await ctx.reply("ভিডিও সংরক্ষণ করা যায়নি।");
+  }
+});
 
   app.use(
     "/telegram/first",
