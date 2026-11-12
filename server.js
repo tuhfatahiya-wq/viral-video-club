@@ -1,5 +1,6 @@
 const express = require("express");
 const { Bot, webhookCallback } = require("grammy");
+const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 
 const app = express();
@@ -10,6 +11,12 @@ const BASE_URL = process.env.RENDER_EXTERNAL_URL;
 
 const firstToken = process.env.FIRST_BOT_TOKEN;
 const secondToken = process.env.BOT_TOKEN;
+const ADMIN_ID = process.env.ADMIN_ID;
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SECRET_KEY
+);
 
 app.get("/", (req, res) => {
   res.send("Viral Video Club Backend is running!");
