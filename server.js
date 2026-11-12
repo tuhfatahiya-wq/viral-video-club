@@ -39,10 +39,12 @@ console.log("SECOND BOT:", secondInfo.username);
   });
 
   secondBot.command("start", async (ctx) => {
-    await ctx.reply(
-      "স্বাগতম Viral Video Delivery Bot-এ! 🎥"
-    );
-  });
+  console.log("SECOND BOT START RECEIVED");
+
+  await ctx.reply(
+    "স্বাগতম Viral Video Delivery Bot-এ! 🎥"
+  );
+});   
 
   app.use(
     "/telegram/first",
