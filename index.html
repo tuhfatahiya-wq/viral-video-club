@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#09090d">
+<title>Viral Video Club</title>
+<style>
+:root {
+  --bg:#09090d;
+  --panel:#15151d;
+  --text:#f7f7fb;
+  --muted:#9696a5;
+  --orange:#ff6a22;
+  --red:#ff3157;
+  --line:#292936;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
+.app {
+  max-width:520px;
+  min-height:100vh;
+  margin:auto;
+  padding:18px 16px 100px;
+  background:radial-gradient(ellipse at 80% 0%,#34131c,transparent 34%),var(--bg);
+}
+header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:22px;
+}
+.brand {display:flex;gap:10px;align-items:center}
+.logo {
+  width:42px;height:42px;
+  border-radius:14px;
+  background:linear-gradient(135deg,var(--orange),var(--red));
+  display:grid;place-items:center;
+  font-size:22px;
+}
+.brand strong {display:block;font-size:15px}
+.brand small {color:var(--muted);font-size:11px}
+.hero {
+  border:1px solid #64302b;
+  border-radius:22px;
+  padding:21px;
+  background:linear-gradient(115deg,#30151a,#17151d 65%,#25202b);
+  margin-bottom:25px;
+}
+.eyebrow {color:#ff9a67;font-size:11px;font-weight:bold}
+.hero h1 {font-size:27px;line-height:1.1}
+.hero p {color:#c4b9bd;font-size:13px}
+.primary {
+  border:0;border-radius:12px;
+  padding:12px 18px;color:white;
+  font-weight:bold;
+  background:linear-gradient(100deg,var(--orange),var(--red));
+}
+.section {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:23px 0 13px;
+}
+.section h2 {font-size:17px}
+.section a {font-size:12px;color:#ff8b60}
+.chips {display:flex;gap:8px;overflow:auto}
+.chip {
+  white-space:nowrap;
+  border:1px solid var(--line);
+  border-radius:30px;
+  padding:8px 13px;
+  color:#b9b9c5;
+  background:var(--panel);
+}
+.chip.active {
+  background:#3b1c1c;
+  border-color:#8b3c2c;
+  color:#ff9a67;
+}
+.cards {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.video {
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+}
+.thumb {
+  height:116px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  background:linear-gradient(135deg,#452126,#201d30,#482c1c);
+  font-size:42px;
+}
+.two {background:linear-gradient(135deg,#18343b,#27213d,#45242e)}
+.three {background:linear-gradient(135deg,#33224b,#572b32)}
+.four {background:linear-gradient(135deg,#49351e,#28243b)}
+.play {
+  position:absolute;
+  width:36px;height:36px;
+  border-radius:50%;
+  display:grid;place-items:center;
+  background:#08080dcc;
+  font-size:13px;
+}
+.tag {
+  position:absolute;left:9px;top:9px;
+  background:#ff512e;
+  padding:3px 7px;
+  border-radius:6px;
+  font-size:9px;font-weight:bold;
+}
+.duration {
+  position:absolute;right:8px;bottom:8px;
+  background:#050509c9;
+  border-radius:5px;padding:3px 6px;
+  font-size:10px;
+}
+.info {padding:10px}
+.info strong {
+  font-size:12px;
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.meta {color:var(--muted);font-size:10px;margin-top:5px}
+.empty {
+  border:1px dashed #383845;
+  border-radius:15px;
+  padding:18px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:12px;
+}
+nav {
+  position:fixed;
+  bottom:0;left:50%;
+  transform:translateX(-50%);
+  width:min(520px,100%);
+  display:flex;
+  justify-content:space-around;
+  background:#111118f2;
+  border-top:1px solid var(--line);
+  padding:10px 5px;
+}
+nav button {
+  background:none;border:0;
+  color:#858594;font-size:10px;
+  display:grid;gap:4px;
+  justify-items:center;
+}
+nav button span {font-size:19px}
+nav button.active {color:#ff8752}
+.toast {
+  position:fixed;bottom:75px;left:50%;
+  transform:translateX(-50%);
+  background:#272731;color:white;
+  padding:10px 14px;border-radius:10px;
+  font-size:12px;display:none;
+}
+</style>
+</head>
+<body>
+<main class="app">
+
+<header>
+ <div class="brand">
+  <div class="logo">▶</div>
+  <div>
+   <strong>VIRAL VIDEO CLUB</strong>
+   <small>Watch • Discover • Enjoy</small>
+  </div>
+ </div>
+ <button onclick="notify('Notifications coming soon')">♧</button>
+</header>
+
+<section class="hero">
+ <div class="eyebrow">YOUR DAILY VIDEO HUB</div>
+ <h1>Discover what's<br>trending today.</h1>
+ <p>Explore the latest additions and popular videos in one place.</p>
+ <button class="primary" onclick="document.getElementById('trending').scrollIntoView({behavior:'smooth'})">
+ ▶ Explore Videos
+ </button>
+</section>
+
+<div class="section">
+ <h2>Browse Categories</h2>
+ <a href="#">View all</a>
+</div>
+
+<div class="chips">
+ <button class="chip active">All</button>
+ <button class="chip">Trending</button>
+ <button class="chip">Latest</button>
+ <button class="chip">Popular</button>
+</div>
+
+<div class="section" id="trending">
+ <h2>🔥 Trending Now</h2>
+ <a href="#">See all</a>
+</div>
+
+<div class="cards">
+ <article class="video">
+  <div class="thumb">
+   <span class="tag">TRENDING</span>
+   🌆
+   <span class="play">▶</span>
+   <span class="duration">08:24</span>
+  </div>
+  <div class="info">
+   <strong>Featured video title</strong>
+   <div class="meta">▶ 12.4K views · Part 01</div>
+  </div>
+ </article>
+
+ <article class="video">
+  <div class="thumb two">
+   🌊
+   <span class="play">▶</span>
+   <span class="duration">12:10</span>
+  </div>
+  <div class="info">
+   <strong>Discover something new</strong>
+   <div class="meta">▶ 8.2K views · Part 02</div>
+  </div>
+ </article>
+</div>
+
+<div class="section">
+ <h2>🆕 Recent Added</h2>
+ <a href="#">See all</a>
+</div>
+
+<div class="cards">
+ <article class="video">
+  <div class="thumb three">
+   🎬
+   <span class="play">▶</span>
+   <span class="duration">06:42</span>
+  </div>
+  <div class="info">
+   <strong>Recently added video</strong>
+   <div class="meta">Added recently · Part 01</div>
+  </div>
+ </article>
+
+ <article class="video">
+  <div class="thumb four">
+   🌃
+   <span class="play">▶</span>
+   <span class="duration">09:15</span>
+  </div>
+  <div class="info">
+   <strong>New collection</strong>
+   <div class="meta">Added recently · Part 01</div>
+  </div>
+ </article>
+</div>
+
+<div class="empty">
+ Demo layout · Real videos will be connected after the bot backend is configured.
+</div>
+
+</main>
+
+<nav>
+ <button class="active" onclick="setTab(this,'Home')">
+  <span>⌂</span>Home
+ </button>
+ <button onclick="setTab(this,'Explore')">
+  <span>◉</span>Explore
+ </button>
+ <button onclick="setTab(this,'Rewards')">
+  <span>▣</span>Rewards
+ </button>
+ <button onclick="setTab(this,'Profile')">
+  <span>♙</span>Profile
+ </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function notify(msg) {
+ const t=document.getElementById('toast');
+ t.textContent=msg;
+ t.style.display='block';
+ setTimeout(()=>t.style.display='none',2200);
+}
+
+function setTab(btn,name) {
+ document.querySelectorAll('nav button').forEach(
+  b=>b.classList.remove('active')
+ );
+ btn.classList.add('active');
+ if(name!=='Home') notify(name+' section coming soon');
+}
+
+document.querySelectorAll('.chip').forEach(c=>{
+ c.addEventListener('click',()=>{
+  document.querySelectorAll('.chip').forEach(
+   x=>x.classList.remove('active')
+  );
+  c.classList.add('active');
+  notify(c.textContent+' videos');
+ });
+});
+</script>
+
+</body>
+</html>
