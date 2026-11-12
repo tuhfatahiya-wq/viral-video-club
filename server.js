@@ -26,6 +26,11 @@ async function startServer() {
 
   const firstBot = new Bot(firstToken);
   const secondBot = new Bot(secondToken);
+  const firstInfo = await firstBot.api.getMe();
+const secondInfo = await secondBot.api.getMe();
+
+console.log("FIRST BOT:", firstInfo.username);
+console.log("SECOND BOT:", secondInfo.username);
 
   firstBot.command("start", async (ctx) => {
     await ctx.reply(
