@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const express = require("express");
 const { Bot, webhookCallback, InlineKeyboard } = require("grammy");
 const { createClient } = require("@supabase/supabase-js");
