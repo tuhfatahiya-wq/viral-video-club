@@ -116,7 +116,28 @@ console.log("SECOND BOT:", secondInfo.username);
 });
 
 firstBot.callbackQuery(/^watch:(.+)$/, async (ctx) => {
-  await ctx.answerCallbackQuery();
+  try {
+    await ctx.answerCallbackQuery();
+
+    const videoId = ctx.match[1];
+    const token = createVideoToken(videoId);
+
+    const link =
+      `https://t.me/ViralVideoDeliveryBot?start=${token}`;
+
+    const keyboard = new InlineKeyboard()
+      .url("🎬 Open Delivery Bot", link);
+
+    await ctx.reply(
+      "🎬 ভিডিও আনলক করার পর Delivery Bot থেকে ভিডিও পাবেন।",
+      { reply_markup: keyboard }
+    );
+
+  } catch (error) {
+    console.error("WATCH LINK ERROR:", error);
+    await ctx.reply("লিংক তৈরি করা যায়নি।");
+  }
+});
 
   await ctx.reply(
     "🎬 এই ভিডিওর জন্য ৩টি বিজ্ঞাপন সম্পন্ন করার ব্যবস্থা প্রস্তুত করা হচ্ছে। একটু অপেক্ষা করুন।"
