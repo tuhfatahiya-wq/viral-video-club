@@ -44,6 +44,30 @@ console.log("SECOND BOT:", secondInfo.username);
       "স্বাগতম Viral Video Club-এ! 🎬\nভিডিও দেখতে আমাদের সেবা প্রস্তুত হচ্ছে।"
     );
   });
+  firstBot.command("videos", async (ctx) => {
+  try {
+    const { data, error } = await supabase
+      .from("videos")
+      .select("id, title, created_at")
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return ctx.reply("এখনো কোনো ভিডিও আপলোড করা হয়নি।");
+    }
+
+    const list = data.map((video, index) =>
+      `${index + 1}. ${video.title}\nID: ${video.id}`
+    ).join("\n\n");
+
+    await ctx.reply("🎬 আমাদের ভিডিও তালিকা:\n\n" + list);
+  } catch (error) {
+    console.error("VIDEO LIST ERROR:", error);
+    await ctx.reply("ভিডিও তালিকা লোড করা যায়নি।");
+  }
+});
 
   secondBot.command("start", async (ctx) => {
   console.log("SECOND BOT START RECEIVED");
