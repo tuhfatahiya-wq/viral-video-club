@@ -20,13 +20,13 @@ function createVideoToken(videoId) {
     .createHmac("sha256", BOT_LINK_SECRET)
     .update(String(videoId))
     .digest("base64url")
-    .slice(0, 22);
+    .slice(0, 18);
 
   return `${videoId}_${signature}`;
 }
 
 function verifyVideoToken(token) {
-  const separator = token.indexOf("_");
+  const separator = token.lastIndexOf("_");
 
   if (separator === -1) return null;
 
