@@ -151,6 +151,8 @@ secondBot.command("start", async (ctx) => {
         "স্বাগতম Viral Video Delivery Bot-এ! 🎥\nভিডিও পেতে প্রথম বট থেকে Watch Now চাপুন।"
       );
     }
+console.log("START PAYLOAD EXISTS:", !!token);
+console.log("START PAYLOAD LENGTH:", token.length);
 
     const videoId = verifyVideoToken(token);
 
