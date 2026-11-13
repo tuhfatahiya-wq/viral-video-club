@@ -14,6 +14,38 @@ const firstToken = process.env.FIRST_BOT_TOKEN;
 const secondToken = process.env.BOT_TOKEN;
 const ADMIN_ID = process.env.ADMIN_ID;
 const BOT_LINK_SECRET = process.env.BOT_LINK_SECRET;
+function createVideoToken(videoId) {
+  const signature = crypto
+    .createHmac("sha256", BOT_LINK_SECRET)
+    .update(String(videoId))
+    .digest("base64url")
+    .slice(0, 22);
+
+  return `${videoId}_${signature}`;
+}
+
+function verifyVideoToken(token) {
+  const separator = token.lastIndexOf("_");
+
+  if (separator === -1) return null;
+
+  const videoId = token.slice(0, separator);
+  const signature = token.slice(separator + 1);
+
+  const expected = createVideoToken(videoId);
+
+  const receivedBuffer = Buffer.from(signature);
+  const expectedBuffer = Buffer.from(expected.split("_").pop());
+
+  if (
+    receivedBuffer.length !== expectedBuffer.length ||
+    !crypto.timingSafeEqual(receivedBuffer, expectedBuffer)
+  ) {
+    return null;
+  }
+
+  return videoId;
+}
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
