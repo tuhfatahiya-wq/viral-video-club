@@ -139,14 +139,57 @@ firstBot.callbackQuery(/^watch:(.+)$/, async (ctx) => {
   }
 });
 
+secondBot.command("start", async (ctx) => {
+  try {
+    console.log("SECOND BOT START RECEIVED");
 
-  secondBot.command("start", async (ctx) => {
-  console.log("SECOND BOT START RECEIVED");
+    const token = ctx.match;
 
-  await ctx.reply(
-    "স্বাগতম Viral Video Delivery Bot-এ! 🎥"
-  );
-});   
+    if (!token) {
+      return ctx.reply(
+        "স্বাগতম Viral Video Delivery Bot-এ! 🎥\nভিডিও পেতে প্রথম বট থেকে Watch Now চাপুন।"
+      );
+    }
+
+    const videoId = verifyVideoToken(token);
+
+    if (!videoId) {
+      return ctx.reply("❌ ভিডিও লিংকটি সঠিক নয়।");
+    }
+
+    const { data: unlock, error: unlockError } = await supabase
+      .from("unlocks")
+      .select("id")
+      .eq("user_id", String(ctx.from.id))
+      .eq("video_id", videoId)
+      .maybeSingle();
+
+    if (unlockError) throw unlockError;
+
+    if (!unlock) {
+      return ctx.reply(
+        "🔒 এই ভিডিওটি এখনো আনলক করা হয়নি।"
+      );
+    }
+
+    const { data: video, error } = await supabase
+      .from("videos")
+      .select("title, telegram_file_id, caption")
+      .eq("id", videoId)
+      .single();
+
+    if (error) throw error;
+
+    await ctx.replyWithVideo(video.telegram_file_id, {
+      caption: video.caption || video.title,
+      protect_content: true
+    });
+
+  } catch (error) {
+    console.error("VIDEO DELIVERY ERROR:", error);
+    await ctx.reply("ভিডিও পাঠানো যায়নি। আবার চেষ্টা করুন।");
+  }
+});
   secondBot.on("message:video", async (ctx) => {
   try {
     if (String(ctx.from.id) !== String(ADMIN_ID)) {
