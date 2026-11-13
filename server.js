@@ -44,7 +44,8 @@ console.log("SECOND BOT:", secondInfo.username);
       "স্বাগতম Viral Video Club-এ! 🎬\nভিডিও দেখতে আমাদের সেবা প্রস্তুত হচ্ছে।"
     );
   });
-  firstBot.command("videos", async (ctx) => {
+  
+   firstBot.command("videos", async (ctx) => {
   try {
     const { data, error } = await supabase
       .from("videos")
@@ -58,15 +59,34 @@ console.log("SECOND BOT:", secondInfo.username);
       return ctx.reply("এখনো কোনো ভিডিও আপলোড করা হয়নি।");
     }
 
-    const list = data.map((video, index) =>
-      `${index + 1}. ${video.title}\nID: ${video.id}`
-    ).join("\n\n");
+    const keyboard = new InlineKeyboard();
 
-    await ctx.reply("🎬 আমাদের ভিডিও তালিকা:\n\n" + list);
+    const list = data.map((video, index) => {
+      keyboard.text(
+        `▶️ Watch Now ${index + 1}`,
+        `watch:${video.id}`
+      ).row();
+
+      return `${index + 1}. ${video.title}`;
+    }).join("\n");
+
+    await ctx.reply(
+      "🎬 ভিডিও তালিকা:\n\n" + list,
+      { reply_markup: keyboard }
+    );
+
   } catch (error) {
     console.error("VIDEO LIST ERROR:", error);
     await ctx.reply("ভিডিও তালিকা লোড করা যায়নি।");
   }
+});
+
+firstBot.callbackQuery(/^watch:(.+)$/, async (ctx) => {
+  await ctx.answerCallbackQuery();
+
+  await ctx.reply(
+    "🎬 এই ভিডিওর জন্য ৩টি বিজ্ঞাপন সম্পন্ন করার ব্যবস্থা প্রস্তুত করা হচ্ছে। একটু অপেক্ষা করুন।"
+  );
 });
 
   secondBot.command("start", async (ctx) => {
