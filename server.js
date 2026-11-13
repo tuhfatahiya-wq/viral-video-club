@@ -139,10 +139,6 @@ firstBot.callbackQuery(/^watch:(.+)$/, async (ctx) => {
   }
 });
 
-  await ctx.reply(
-    "🎬 এই ভিডিওর জন্য ৩টি বিজ্ঞাপন সম্পন্ন করার ব্যবস্থা প্রস্তুত করা হচ্ছে। একটু অপেক্ষা করুন।"
-  );
-});
 
   secondBot.command("start", async (ctx) => {
   console.log("SECOND BOT START RECEIVED");
