@@ -20,13 +20,13 @@ function createVideoToken(videoId) {
     .createHmac("sha256", BOT_LINK_SECRET)
     .update(String(videoId))
     .digest("base64url")
-    .slice(0, 18);
+    .slice(0, 22);
 
   return `${videoId}_${signature}`;
 }
 
 function verifyVideoToken(token) {
-  const separator = token.lastIndexOf("_");
+  const separator = token.indexOf("_");
 
   if (separator === -1) return null;
 
@@ -34,12 +34,10 @@ function verifyVideoToken(token) {
   const signature = token.slice(separator + 1);
 
   const expected = createVideoToken(videoId);
-console.log("TOKEN SIGNATURE LENGTH:", signature.length);
-console.log("EXPECTED SIGNATURE LENGTH:", expected.split("_").pop().length);
-console.log("SIGNATURE MATCH:", signature === expected.split("_").pop());
+  const expectedSignature = expected.slice(expected.indexOf("_") + 1);
 
   const receivedBuffer = Buffer.from(signature);
-  const expectedBuffer = Buffer.from(expected.split("_").pop());
+  const expectedBuffer = Buffer.from(expectedSignature);
 
   if (
     receivedBuffer.length !== expectedBuffer.length ||
@@ -47,6 +45,9 @@ console.log("SIGNATURE MATCH:", signature === expected.split("_").pop());
   ) {
     return null;
   }
+
+  return videoId;
+}
 
   return videoId;
 }
