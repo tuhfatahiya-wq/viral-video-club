@@ -143,7 +143,7 @@ secondBot.command("start", async (ctx) => {
   try {
     console.log("SECOND BOT START RECEIVED");
 
-    const token = ctx.match;
+    const token = String(ctx.match || "").trim();
 
     if (!token) {
       return ctx.reply(
