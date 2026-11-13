@@ -34,6 +34,9 @@ function verifyVideoToken(token) {
   const signature = token.slice(separator + 1);
 
   const expected = createVideoToken(videoId);
+console.log("TOKEN SIGNATURE LENGTH:", signature.length);
+console.log("EXPECTED SIGNATURE LENGTH:", expected.split("_").pop().length);
+console.log("SIGNATURE MATCH:", signature === expected.split("_").pop());
 
   const receivedBuffer = Buffer.from(signature);
   const expectedBuffer = Buffer.from(expected.split("_").pop());
