@@ -14,6 +14,7 @@ const firstToken = process.env.FIRST_BOT_TOKEN;
 const secondToken = process.env.BOT_TOKEN;
 const ADMIN_ID = process.env.ADMIN_ID;
 const BOT_LINK_SECRET = process.env.BOT_LINK_SECRET;
+console.log("BOT LINK SECRET EXISTS:", !!BOT_LINK_SECRET);
 function createVideoToken(videoId) {
   const signature = crypto
     .createHmac("sha256", BOT_LINK_SECRET)
