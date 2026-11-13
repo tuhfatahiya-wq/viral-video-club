@@ -13,6 +13,7 @@ const BASE_URL = process.env.RENDER_EXTERNAL_URL;
 const firstToken = process.env.FIRST_BOT_TOKEN;
 const secondToken = process.env.BOT_TOKEN;
 const ADMIN_ID = process.env.ADMIN_ID;
+const BOT_LINK_SECRET = process.env.BOT_LINK_SECRET;
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
