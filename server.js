@@ -26,7 +26,7 @@ function createVideoToken(videoId) {
 }
 
 function verifyVideoToken(token) {
-  const separator = token.lastIndexOf("_");
+  const separator = token.indexOf("_");
 
   if (separator === -1) return null;
 
