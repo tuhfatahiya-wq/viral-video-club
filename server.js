@@ -45,6 +45,8 @@ function verifyVideoToken(token) {
   ) {
     return null;
   }
+return videoId;
+}
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
