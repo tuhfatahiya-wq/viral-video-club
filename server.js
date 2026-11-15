@@ -198,7 +198,7 @@ console.log("START PAYLOAD LENGTH:", token.length);
     await ctx.reply("ভিডিও পাঠানো যায়নি। আবার চেষ্টা করুন।");
   }
 });
- secondBot.on("message:photo", async (ctx) => {
+ firstBot.on("message:photo", async (ctx) => {
   try {
     if (String(ctx.from.id) !== String(ADMIN_ID)) {
       return ctx.reply("আপনার ছবি আপলোড করার অনুমতি নেই।");
@@ -216,7 +216,7 @@ console.log("START PAYLOAD LENGTH:", token.length);
   }
 });
 
-secondBot.command("clearthumbnail", async (ctx) => {
+firstBot.command("clearthumbnail", async (ctx) => {
   if (String(ctx.from.id) !== String(ADMIN_ID)) {
     return ctx.reply("অনুমতি নেই।");
   }
