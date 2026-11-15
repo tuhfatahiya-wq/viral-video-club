@@ -85,7 +85,7 @@ console.log("SECOND BOT:", secondInfo.username);
   try {
     const { data, error } = await supabase
       .from("videos")
-      .select("id, title, created_at")
+      .select("id, title, caption, thumbnail_file_id, created_at")
       .order("created_at", { ascending: false })
       .limit(20);
 
@@ -194,7 +194,33 @@ console.log("START PAYLOAD LENGTH:", token.length);
     await ctx.reply("ভিডিও পাঠানো যায়নি। আবার চেষ্টা করুন।");
   }
 });
-  secondBot.on("message:video", async (ctx) => {
+ secondBot.on("message:photo", async (ctx) => {
+  try {
+    if (String(ctx.from.id) !== String(ADMIN_ID)) {
+      return ctx.reply("আপনার ছবি আপলোড করার অনুমতি নেই।");
+    }
+
+    const photos = ctx.message.photo;
+    currentThumbnailFileId = photos[photos.length - 1].file_id;
+
+    await ctx.reply(
+      "✅ থাম্বনেইল ছবি সংরক্ষিত হয়েছে!\nএখন ভিডিও পাঠান।"
+    );
+  } catch (error) {
+    console.error("THUMBNAIL ERROR:", error);
+    await ctx.reply("ছবি সংরক্ষণ করা যায়নি।");
+  }
+});
+
+secondBot.command("clearthumbnail", async (ctx) => {
+  if (String(ctx.from.id) !== String(ADMIN_ID)) {
+    return ctx.reply("অনুমতি নেই।");
+  }
+
+  currentThumbnailFileId = null;
+  await ctx.reply("থাম্বনেইল বন্ধ করা হয়েছে।");
+});
+ secondBot.on("message:video", async (ctx) => {
   try {
     if (String(ctx.from.id) !== String(ADMIN_ID)) {
       return ctx.reply("আপনার ভিডিও আপলোড করার অনুমতি নেই।");
@@ -205,10 +231,11 @@ console.log("START PAYLOAD LENGTH:", token.length);
     const { error } = await supabase
       .from("videos")
       .insert({
-        title: ctx.message.caption || "নতুন ভিডিও",
-        telegram_file_id: video.file_id,
-        caption: ctx.message.caption || null
-      });
+  title: ctx.message.caption || "নতুন ভিডিও",
+  telegram_file_id: video.file_id,
+  caption: ctx.message.caption || null,
+  thumbnail_file_id: currentThumbnailFileId
+});
 
     if (error) throw error;
 
