@@ -95,21 +95,25 @@ console.log("SECOND BOT:", secondInfo.username);
       return ctx.reply("এখনো কোনো ভিডিও আপলোড করা হয়নি।");
     }
 
-    const keyboard = new InlineKeyboard();
+    await ctx.reply("🎬 আমাদের ভিডিও সংগ্রহ:");
 
-    const list = data.map((video, index) => {
-      keyboard.text(
-        `▶️ Watch Now ${index + 1}`,
-        `watch:${video.id}`
-      ).row();
+    for (const video of data) {
+      const keyboard = new InlineKeyboard()
+        .text("▶️ Watch Now", `watch:${video.id}`);
 
-      return `${index + 1}. ${video.title}`;
-    }).join("\n");
+      const caption = video.caption || video.title;
 
-    await ctx.reply(
-      "🎬 ভিডিও তালিকা:\n\n" + list,
-      { reply_markup: keyboard }
-    );
+      if (video.thumbnail_file_id) {
+        await ctx.replyWithPhoto(video.thumbnail_file_id, {
+          caption: caption,
+          reply_markup: keyboard
+        });
+      } else {
+        await ctx.reply(caption, {
+          reply_markup: keyboard
+        });
+      }
+    }
 
   } catch (error) {
     console.error("VIDEO LIST ERROR:", error);
