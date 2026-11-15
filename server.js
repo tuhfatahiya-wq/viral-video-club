@@ -68,6 +68,7 @@ async function startServer() {
 
   const firstBot = new Bot(firstToken);
   const secondBot = new Bot(secondToken);
+let currentThumbnailFileId = null;
   const firstInfo = await firstBot.api.getMe();
 const secondInfo = await secondBot.api.getMe();
 
