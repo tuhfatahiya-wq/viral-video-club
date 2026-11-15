@@ -95,24 +95,20 @@ console.log("SECOND BOT:", secondInfo.username);
       return ctx.reply("এখনো কোনো ভিডিও আপলোড করা হয়নি।");
     }
 
-    await ctx.reply("🎬 আমাদের ভিডিও সংগ্রহ:");
-
     for (const video of data) {
+      if (!video.thumbnail_file_id) continue;
+
+      const token = createVideoToken(video.id);
+      const link =
+        `https://t.me/ViralVideoDeliveryBot?start=${token}`;
+
       const keyboard = new InlineKeyboard()
-        .text("▶️ Watch Now", `watch:${video.id}`);
+        .url("▶️ Watch Now", link);
 
-      const caption = video.caption || video.title;
-
-      if (video.thumbnail_file_id) {
-        await ctx.replyWithPhoto(video.thumbnail_file_id, {
-          caption: caption,
-          reply_markup: keyboard
-        });
-      } else {
-        await ctx.reply(caption, {
-          reply_markup: keyboard
-        });
-      }
+      await ctx.replyWithPhoto(video.thumbnail_file_id, {
+        caption: video.caption || video.title,
+        reply_markup: keyboard
+      });
     }
 
   } catch (error) {
@@ -121,29 +117,7 @@ console.log("SECOND BOT:", secondInfo.username);
   }
 });
 
-firstBot.callbackQuery(/^watch:(.+)$/, async (ctx) => {
-  try {
-    await ctx.answerCallbackQuery();
 
-    const videoId = ctx.match[1];
-    const token = createVideoToken(videoId);
-
-    const link =
-      `https://t.me/ViralVideoDeliveryBot?start=${token}`;
-
-    const keyboard = new InlineKeyboard()
-      .url("🎬 Open Delivery Bot", link);
-
-    await ctx.reply(
-      "🎬 ভিডিও আনলক করার পর Delivery Bot থেকে ভিডিও পাবেন।",
-      { reply_markup: keyboard }
-    );
-
-  } catch (error) {
-    console.error("WATCH LINK ERROR:", error);
-    await ctx.reply("লিংক তৈরি করা যায়নি।");
-  }
-});
 
 secondBot.command("start", async (ctx) => {
   try {
