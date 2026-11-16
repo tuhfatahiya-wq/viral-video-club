@@ -341,7 +341,8 @@ async function loadVideos() {
     }
 
     if (videoId) {
-  container.style.display = "block";
+  container.style.display = "grid";
+  container.style.gridTemplateColumns = "1fr";
 
   container.innerHTML = `
         <a class="video-back" href="https://tuhfatahiya-wq.github.io/viral-video-club/">
