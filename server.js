@@ -121,7 +121,8 @@ async function startServer() {
         return res.status(502).send("ছবি লোড করা যায়নি");
       }
 
-      res.set("Content-Type", imageResponse.headers.get("content-type") || "image/jpeg");
+      res.set("Content-Type", "image/jpeg");
+res.set("Content-Disposition", "inline; filename=thumbnail.jpg");
       res.set("Cache-Control", "public, max-age=3600");
 
       const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
