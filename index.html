@@ -236,76 +236,73 @@ nav button.active {color:#ff8752}
 <div class="toast" id="toast"></div>
 
 <script>
-function notify(msg) {
- const t=document.getElementById('toast');
- t.textContent=msg;
- t.style.display='block';
- setTimeout(()=>t.style.display='none',2200);
-}
-
-function setTab(btn,name) {
- document.querySelectorAll('nav button').forEach(
-  b=>b.classList.remove('active')
- );
- btn.classList.add('active');
- if(name!=='Home') notify(name+' section coming soon');
-}
-
-document.querySelectorAll('.chip').forEach(c=>{
- c.addEventListener('click',()=>{
-  document.querySelectorAll('.chip').forEach(
-   x=>x.classList.remove('active')
-  );
-  c.classList.add('active');
-  notify(c.textContent+' videos');
- });
-});
-</script>
-<script>
 const params = new URLSearchParams(window.location.search);
 const videoId = params.get("video");
-if (videoId) {
-  document.querySelector(".hero")?.remove();
-  document.querySelector(".chips")?.previousElementSibling?.remove();
-  document.querySelector(".chips")?.remove();
-  document.querySelector("nav")?.remove();
-}
+
 const container = document.getElementById("video-container");
+const heading = document.querySelector("#trending h2");
 
-async function loadVideo() {
-  if (!videoId) {
-    container.innerHTML = '<div class="empty">ভিডিও নির্বাচন করা হয়নি।</div>';
-    return;
+// দুই কলামের ডিজাইন
+const style = document.createElement("style");
+style.textContent = `
+  #video-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 10px 0;
   }
 
-  try {
-    const response = await fetch(
-      `https://viral-video-club.onrender.com/api/videos/${encodeURIComponent(videoId)}`
-    );
-
-    if (!response.ok) throw new Error("ভিডিও পাওয়া যায়নি");
-
-    const video = await response.json();
-
-    container.innerHTML = `
-      <article class="video">
-        <div class="thumb">
-          ${
-            video.thumbnail_url
-              ? `<img src="${video.thumbnail_url}" alt="ভিডিওর থাম্বনেইল" style="width:100%;height:100%;object-fit:cover;">`
-              : "🖼️"
-          }
-        </div>
-        <div class="info">
-          <strong>${escapeHTML(video.caption || video.title || "ভিডিও")}</strong>
-        </div>
-      </article>
-    `;
-  } catch (error) {
-    console.error(error);
-    container.innerHTML = '<div class="empty">ভিডিওর তথ্য লোড করা যায়নি।</div>';
+  .video-card {
+    min-width: 0;
+    overflow: hidden;
+    background: #19182d;
+    border: 1px solid #292840;
+    border-radius: 15px;
   }
-}
+
+  .video-card img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    display: block;
+  }
+
+  .video-info {
+    padding: 10px;
+  }
+
+  .video-info strong {
+    display: block;
+    color: white;
+    font-size: 14px;
+    line-height: 1.4;
+    min-height: 40px;
+  }
+
+  .watch-button {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px 4px;
+    border: 0;
+    border-radius: 10px;
+    background: #8954f5;
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  .video-back {
+    display: inline-block;
+    margin: 10px 0;
+    color: #a77aff;
+    text-decoration: none;
+  }
+`;
+document.head.appendChild(style);
 
 function escapeHTML(value) {
   return String(value).replace(/[&<>"']/g, char => ({
@@ -317,7 +314,76 @@ function escapeHTML(value) {
   })[char]);
 }
 
-loadVideo();
+async function loadVideos() {
+  try {
+    if (videoId) {
+      heading.textContent = "🎬 Video Details";
+    } else {
+      heading.textContent = "🎬 All Videos";
+    }
+
+    const url = videoId
+      ? `https://viral-video-club.onrender.com/api/videos/${encodeURIComponent(videoId)}`
+      : "https://viral-video-club.onrender.com/api/videos";
+
+    const response = await fetch(url);
+
+    if (!response.ok) throw new Error("ভিডিও পাওয়া যায়নি");
+
+    const result = await response.json();
+
+    const videos = videoId ? [result] : result;
+
+    if (!videos.length) {
+      container.innerHTML =
+        '<div class="empty">এখনো কোনো ভিডিও যোগ করা হয়নি।</div>';
+      return;
+    }
+
+    if (videoId) {
+      container.innerHTML = `
+        <a class="video-back" href="https://tuhfatahiya-wq.github.io/viral-video-club/">
+          ← সব ভিডিওতে ফিরে যান
+        </a>
+        ${makeCard(videos[0], false)}
+      `;
+    } else {
+      container.innerHTML = videos
+        .map(video => makeCard(video, true))
+        .join("");
+    }
+
+  } catch (error) {
+    console.error(error);
+    container.innerHTML =
+      '<div class="empty">ভিডিও লোড করা যায়নি। আবার চেষ্টা করুন।</div>';
+  }
+}
+
+function makeCard(video, showButton) {
+  const title = escapeHTML(video.caption || video.title || "ভিডিও");
+  const thumbnail = video.thumbnail_url
+    ? `<img src="${escapeHTML(video.thumbnail_url)}" alt="ভিডিও থাম্বনেইল">`
+    : `<div style="aspect-ratio:4/5;display:grid;place-items:center;color:white;">🖼️</div>`;
+
+  const button = showButton
+    ? `<a class="watch-button" href="?video=${encodeURIComponent(video.id)}">▶ Watch Now</a>`
+    : "";
+
+  return `
+    <article class="video-card">
+      ${thumbnail}
+      <div class="video-info">
+        <strong>${title}</strong>
+        ${button}
+      </div>
+    </article>
+  `;
+}
+
+loadVideos();
 </script>
+</body>
+</html>
 </body>
 </html>
