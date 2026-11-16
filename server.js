@@ -86,6 +86,7 @@ app.get("/api/videos", async (req, res) => {
       id: video.id,
       title: video.title,
       caption: video.caption,
+      delivery_url: `https://t.me/ViralVideoDeliveryBot?start=${createVideoToken(data.id)}`,
       thumbnail_url: video.thumbnail_file_id
         ? `${BASE_URL}/api/videos/${video.id}/thumbnail`
         : null
