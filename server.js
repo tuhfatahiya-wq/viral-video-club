@@ -68,6 +68,69 @@ async function startServer() {
 
   const firstBot = new Bot(firstToken);
   const secondBot = new Bot(secondToken);
+// Mini App: ভিডিওর থাম্বনেইল ও ক্যাপশন
+  app.get("/api/videos/:id", async (req, res) => {
+    res.set("Access-Control-Allow-Origin", "https://tuhfatahiya-wq.github.io");
+
+    try {
+      const { data, error } = await supabase
+        .from("videos")
+        .select("id, title, caption, thumbnail_file_id")
+        .eq("id", req.params.id)
+        .single();
+
+      if (error || !data) {
+        return res.status(404).json({ error: "ভিডিও পাওয়া যায়নি" });
+      }
+
+      res.json({
+        id: data.id,
+        title: data.title,
+        caption: data.caption,
+        thumbnail_url: data.thumbnail_file_id
+          ? `${BASE_URL}/api/videos/${data.id}/thumbnail`
+          : null
+      });
+    } catch (error) {
+      console.error("MINI APP VIDEO ERROR:", error);
+      res.status(500).json({ error: "তথ্য লোড করা যায়নি" });
+    }
+  });
+
+  // থাম্বনেইল ছবি নিরাপদে দেখানো
+  app.get("/api/videos/:id/thumbnail", async (req, res) => {
+    res.set("Access-Control-Allow-Origin", "https://tuhfatahiya-wq.github.io");
+
+    try {
+      const { data, error } = await supabase
+        .from("videos")
+        .select("thumbnail_file_id")
+        .eq("id", req.params.id)
+        .single();
+
+      if (error || !data?.thumbnail_file_id) {
+        return res.status(404).send("ছবি পাওয়া যায়নি");
+      }
+
+      const file = await firstBot.api.getFile(data.thumbnail_file_id);
+      const imageResponse = await fetch(
+        `https://api.telegram.org/file/bot${firstToken}/${file.file_path}`
+      );
+
+      if (!imageResponse.ok) {
+        return res.status(502).send("ছবি লোড করা যায়নি");
+      }
+
+      res.set("Content-Type", imageResponse.headers.get("content-type") || "image/jpeg");
+      res.set("Cache-Control", "public, max-age=3600");
+
+      const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+      res.send(imageBuffer);
+    } catch (error) {
+      console.error("THUMBNAIL LOAD ERROR:", error);
+      res.status(500).send("ছবি লোড করা যায়নি");
+    }
+  });
 let currentThumbnailFileId = null;
   const firstInfo = await firstBot.api.getMe();
 const secondInfo = await secondBot.api.getMe();
