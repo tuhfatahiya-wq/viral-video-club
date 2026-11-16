@@ -264,7 +264,12 @@ document.querySelectorAll('.chip').forEach(c=>{
 <script>
 const params = new URLSearchParams(window.location.search);
 const videoId = params.get("video");
-
+if (videoId) {
+  document.querySelector(".hero")?.remove();
+  document.querySelector(".chips")?.previousElementSibling?.remove();
+  document.querySelector(".chips")?.remove();
+  document.querySelector("nav")?.remove();
+}
 const container = document.getElementById("video-container");
 
 async function loadVideo() {
