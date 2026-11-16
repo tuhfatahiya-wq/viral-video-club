@@ -69,6 +69,32 @@ async function startServer() {
   const firstBot = new Bot(firstToken);
   const secondBot = new Bot(secondToken);
 // Mini App: ভিডিওর থাম্বনেইল ও ক্যাপশন
+// Mini App: সব ভিডিওর তালিকা
+app.get("/api/videos", async (req, res) => {
+  res.set("Access-Control-Allow-Origin", "https://tuhfatahiya-wq.github.io");
+
+  try {
+    const { data, error } = await supabase
+      .from("videos")
+      .select("id, title, caption, thumbnail_file_id, created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+
+    res.json(data.map(video => ({
+      id: video.id,
+      title: video.title,
+      caption: video.caption,
+      thumbnail_url: video.thumbnail_file_id
+        ? `${BASE_URL}/api/videos/${video.id}/thumbnail`
+        : null
+    })));
+  } catch (error) {
+    console.error("VIDEOS LIST ERROR:", error);
+    res.status(500).json({ error: "ভিডিও লোড করা যায়নি" });
+  }
+});
   app.get("/api/videos/:id", async (req, res) => {
     res.set("Access-Control-Allow-Origin", "https://tuhfatahiya-wq.github.io");
 
